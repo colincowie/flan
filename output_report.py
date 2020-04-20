@@ -15,19 +15,26 @@ def create_report(parser: FlanXmlParser, builder: ReportBuilder, nmap_command: s
 
     builder.init_report(start_date, nmap_command)
 
-    if parser.vulnerable_services:
-        builder.add_vulnerable_section()
-        builder.initialize_section()
-        builder.add_vulnerable_services(parser.vulnerable_dict)
+    builder.add_ips_section()
+    for ip in ip_reader:
+        builder.add_ip_address(ip.strip())
+
+    #add end itemization
+    builder.add_enditemize()
 
     if parser.non_vuln_services:
         builder.add_non_vulnerable_section()
         builder.initialize_section()
         builder.add_non_vulnerable_services(parser.non_vulnerable_dict)
 
-    builder.add_ips_section()
-    for ip in ip_reader:
-        builder.add_ip_address(ip.strip())
+    # building.add_services
+    if parser.vulnerable_services:
+        builder.add_vulnerable_section()
+        builder.initialize_section()
+        builder.add_vulnerable_services(parser.vulnerable_dict)
+
+
+
 
     builder.finalize()
     output_writer.write(builder.build())

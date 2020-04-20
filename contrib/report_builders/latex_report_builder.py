@@ -26,7 +26,7 @@ class LatexReportBuilder(ReportBuilder):
                      + start_date
                      + 'UTC.\n\\begin{lstlisting}\n'
                      + nmap_command
-                     + '\n\\end{lstlisting}\nTo find out what IPs were scanned see the end of this report.\n')
+                     + '\n\\end{lstlisting}\n')
 
     def build(self) -> Any:
         return self.buffer
@@ -62,7 +62,9 @@ class LatexReportBuilder(ReportBuilder):
                          + str(num_vulns)
                          + ' vulnerabilities apply to these network locations:}\n\\begin{itemize}\n')
             for addr in locations:
+                self._append('\\color{darkgreen}\n')
                 self._append('\\item ' + addr + ' Ports: ' + str(locations[addr]) + '\n')
+            self._append('\\color{almostwhite}\n')
             self._append('\\\\ \\\\ \n \\end{itemize}\n')
         self._append('\\end{enumerate}\n')
 
@@ -70,8 +72,10 @@ class LatexReportBuilder(ReportBuilder):
         for app_name, result in scan_results.items():
             self._append('\\item \\textbf{\\large ' + app_name + ' \\large}\n\\begin{itemize}\n')
             locations = result.locations
+            self._append('\\color{darkgreen}\n')
             for addr in locations:
                 self._append('\\item ' + addr + ' Ports: ' + str(locations[addr]) + '\n')
+            self._append('\\color{almostwhite}\n')
             self._append('\\end{itemize}\n')
         self._append('\\end{enumerate}\n')
 
@@ -92,8 +96,10 @@ class LatexReportBuilder(ReportBuilder):
     def add_ip_address(self, ip: str):
         self._append('\\item ' + ip + '\n')
 
-    def finalize(self):
+    def add_enditemize(self):
         self._append('\\end{itemize}\n')
+
+    def finalize(self):
         self._append('\\end{document}')
 
     def _append(self, text: str):
@@ -109,6 +115,11 @@ class LatexReportBuilder(ReportBuilder):
 \usepackage{hyperref}
 \usepackage{fontawesome}
 \usepackage{listings}
+\definecolor{darkgreen}{HTML}{00f500}
+\definecolor{dark}{HTML}{424250}
+\definecolor{almostwhite}{HTML}{ADADB1}
+\pagecolor{dark}
+\color{almostwhite}
 \lstset{
 basicstyle=\small\ttfamily,
 columns=flexible,
